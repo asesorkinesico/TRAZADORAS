@@ -1,0 +1,434 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>TRAZADORAS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: tablero de una pantalla. Banda institucional con selector -> ficha + cifras -> [gráfico | tabla de centros] -> pie con criterios y soporte */
+:root {
+  --bg: #dfe7f1;
+  --panel: #ffffff;
+  --panel-2: #f2f6fb;
+  --ink: #102038;
+  --ink-2: #44546b;
+  --ink-3: #74839a;
+  --line: #d3dce8;
+  --grid: #e6ecf3;
+  --band: #0d2a50;
+  --band-2: #133a6b;
+  --band-ink: #ffffff;
+  --band-ink-2: #a9c2e4;
+  --accent: #14a3b8;
+  --accent-soft: #dff3f6;
+  --sel: #e5effb;
+  --prog: #2a78d6;
+  --prod: #eb6834;
+  --ok: #138a4a;   --ok-bg: #dcf3e5;   --ok-strong: #1a9d57;
+  --warn: #8f5f00; --warn-bg: #fdefc8; --warn-strong: #e3a008;
+  --bad: #b92f2f;  --bad-bg: #fbdede;  --bad-strong: #d64545;
+  --display: "Bitter", Georgia, serif;
+  --body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1220; --panel: #142033; --panel-2: #1a2940; --ink: #e9eff7; --ink-2: #b3c0d2; --ink-3: #8293aa;
+  --line: #26364f; --grid: #1f2e45; --band: #081a33; --band-2: #0f2a50; --band-ink: #ffffff; --band-ink-2: #8fb0dc;
+  --accent: #3cc3d6; --accent-soft: #123842; --sel: #1d3456; --prog: #3987e5; --prod: #d95926;
+  --ok: #6bd49a; --ok-bg: #133524; --ok-strong: #2fae68; --warn: #f3c45a; --warn-bg: #3a2e10; --warn-strong: #d99a00;
+  --bad: #f38b8b; --bad-bg: #3f1c1c; --bad-strong: #d64545; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b1220; --panel: #142033; --panel-2: #1a2940; --ink: #e9eff7; --ink-2: #b3c0d2; --ink-3: #8293aa;
+  --line: #26364f; --grid: #1f2e45; --band: #081a33; --band-2: #0f2a50; --band-ink: #ffffff; --band-ink-2: #8fb0dc;
+  --accent: #3cc3d6; --accent-soft: #123842; --sel: #1d3456; --prog: #3987e5; --prod: #d95926;
+  --ok: #6bd49a; --ok-bg: #133524; --ok-strong: #2fae68; --warn: #f3c45a; --warn-bg: #3a2e10; --warn-strong: #d99a00;
+  --bad: #f38b8b; --bad-bg: #3f1c1c; --bad-strong: #d64545; color-scheme: dark; }
+
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.4; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app { height: 100%; display: grid; grid-template-rows: auto auto 1fr auto; }
+
+/* banda superior */
+.band { background: linear-gradient(180deg, var(--band-2), var(--band)); color: var(--band-ink); border-bottom: 3px solid var(--accent); }
+.band-in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px 28px; padding-block: 10px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.inst { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--band-ink-2); font-weight: 600; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 22px; line-height: 1.1; margin: 2px 0 0; white-space: nowrap; }
+h1 span { color: var(--accent); }
+.selrow { display: flex; gap: 6px; min-width: 0; }
+select { flex: 1; min-width: 0; font: 600 14px var(--body); color: var(--ink); background: var(--panel);
+  border: 0; border-radius: 8px; padding: 9px 12px; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+.nav { font: 700 18px var(--body); width: 38px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.1); color: var(--band-ink); border-radius: 8px; cursor: pointer; }
+.nav:hover { background: rgba(255,255,255,.22); }
+.corte { font-size: 12px; color: var(--band-ink-2); text-align: right; line-height: 1.5; }
+.corte b { color: var(--band-ink); font-weight: 700; }
+
+/* ficha + cifras */
+.head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: center; padding-block: 12px 10px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.ficha { min-width: 0; display: grid; gap: 4px; }
+.ficha h2 { font-family: var(--display); font-weight: 700; font-size: 19px; line-height: 1.2; margin: 0; text-wrap: balance; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; }
+.chip.ambito { color: var(--band-ink); background: var(--band-2); border-color: var(--band-2); }
+.chip.nota { color: var(--warn); background: var(--warn-bg); border-color: transparent; }
+.kpis { display: grid; grid-template-columns: repeat(5, auto); gap: 8px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 7px 14px; display: grid; gap: 0; min-width: 118px; }
+.kpi .k { font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+.kpi .v { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.kpi .s { font-size: 11.5px; color: var(--ink-3); }
+.kpi.prog { border-top: 3px solid var(--prog); }
+.kpi.prod { border-top: 3px solid var(--prod); }
+.kpi.est { color: var(--band-ink); border: 0; }
+.kpi.est .k, .kpi.est .s { color: inherit; opacity: .9; }
+.kpi.est.ok { background: var(--ok-strong); }
+.kpi.est.warn { background: var(--warn-strong); color: #2a1d00; }
+.kpi.est.bad { background: var(--bad-strong); }
+.kpi.est.na { background: var(--ink-3); }
+
+/* cuerpo */
+.main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; min-height: 0; padding-bottom: 12px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; display: grid; grid-template-rows: auto 1fr; min-height: 0; min-width: 0; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(13, 42, 80, .06), 0 8px 24px rgba(13, 42, 80, .06); }
+.ph { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; padding: 10px 16px; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+.ph h3 { margin: 0; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; font-weight: 800; color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.volver { font: 700 12px var(--body); color: var(--band-ink); background: var(--band-2); border: 0; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.hint { font-size: 12px; color: var(--ink-3); }
+
+.chart { position: relative; min-height: 260px; }
+.chart svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.chart text { fill: var(--ink-3); font-family: var(--body); font-size: 11.5px; }
+.chart .lbl { fill: var(--ink); font-weight: 800; font-size: 12.5px; }
+.chart .zona { fill: var(--ink-3); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; z-index: 2;
+  box-shadow: 0 8px 22px rgba(13, 42, 80, .2); padding: 8px 10px; font-size: 12.5px; min-width: 190px; display: grid; gap: 3px; }
+.tip .m { font-weight: 800; }
+.tip .r { display: flex; justify-content: space-between; gap: 14px; font-variant-numeric: tabular-nums; }
+.tip .r i { display: inline-block; width: 10px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+.tabla { overflow: auto; min-height: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+thead th { position: sticky; top: 0; background: var(--panel); z-index: 1; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); font-weight: 700;
+  text-align: right; padding: 0; border-bottom: 2px solid var(--line); vertical-align: bottom; }
+thead th button { all: unset; cursor: pointer; display: flex; justify-content: flex-end; align-items: flex-end; gap: 4px; padding: 8px 8px 6px; width: 100%; box-sizing: border-box; }
+thead th:first-child button { justify-content: flex-start; }
+thead th button:hover { color: var(--ink); background: var(--panel-2); }
+thead th button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+thead th .ar { font-size: 10px; opacity: .35; }
+thead th[aria-sort] { color: var(--ink); }
+thead th[aria-sort] .ar { opacity: 1; color: var(--accent); }
+th:first-child, td:first-child { text-align: left; }
+td { text-align: right; padding: 5px 8px; white-space: nowrap; border-bottom: 1px solid var(--line); }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: var(--panel-2); }
+tbody tr.sel td { background: var(--sel); }
+tbody tr.sel td:first-child { box-shadow: inset 4px 0 0 var(--accent); }
+tbody tr.total td { font-weight: 800; background: var(--panel-2); }
+tbody tr.total.sel td { background: var(--sel); }
+.cn { display: inline-flex; align-items: baseline; gap: 6px; }
+.cn small { font-size: 9.5px; letter-spacing: .06em; color: var(--ink-3); font-weight: 700; min-width: 44px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); }
+.pill.warn::before { background: var(--warn-strong); }
+.pill.bad { color: var(--bad); background: var(--bad-bg); }
+.pill.na { color: var(--ink-3); background: var(--grid); }
+
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 20px; font-size: 12px; color: var(--ink-2);
+  background: var(--panel); border-top: 1px solid var(--line); padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.crit { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.crit .pill { font-weight: 600; font-size: 11.5px; }
+.soporte { display: inline-flex; gap: 6px; align-items: center; }
+.soporte a { color: var(--ink); font-weight: 700; user-select: all; }
+
+/* pantallas pequeñas: se apila y se permite scroll */
+@media (max-width: 1100px) {
+  html, body { height: auto; }
+  .app { height: auto; }
+  .band-in { grid-template-columns: 1fr; }
+  .corte { text-align: left; }
+  .head { grid-template-columns: 1fr; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+  .main { grid-template-columns: 1fr; }
+  .chart { height: 360px; }
+  .tabla { max-height: none; }
+  h1 { white-space: normal; }
+}
+</style>
+
+<div class="app">
+  <header class="band"><div class="band-in">
+    <div>
+      <div class="inst">Departamento de Salud Municipal · Talca</div>
+      <h1>Trazadoras <span>APS Talca</span> 2026</h1>
+    </div>
+    <div class="selrow">
+      <button class="nav" id="prev" aria-label="Trazadora anterior">‹</button>
+      <select id="sel" aria-label="Trazadora"></select>
+      <button class="nav" id="next" aria-label="Trazadora siguiente">›</button>
+    </div>
+    <div class="corte">Producción REM <b id="corte"></b><br>Programado <b>MPO 2026</b></div>
+  </div></header>
+
+  <section class="head">
+    <div class="ficha">
+      <h2 id="nombre"></h2>
+      <div class="chips">
+        <span class="chip ambito" id="ambito"></span>
+        <span class="chip" id="pob"></span>
+        <span class="chip nota" id="nota" hidden>REM P: corte semestral de junio</span>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <main class="main">
+    <section class="panel">
+      <div class="ph">
+        <h3>Programado vs producción acumulada</h3>
+        <div class="legend">
+          <span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="var(--prog)" stroke-width="2.5"/></svg>Programado MPO</span>
+          <span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="var(--prod)" stroke-width="2.5"/></svg>Producción</span>
+          <span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="var(--prod)" stroke-width="2.5" stroke-dasharray="5 4"/></svg>Proyección</span>
+        </div>
+      </div>
+      <div class="chart" id="chart"></div>
+    </section>
+
+    <section class="panel">
+      <div class="ph">
+        <h3>Centros de salud <span class="hint" id="hmes"></span></h3>
+        <span class="hint" id="hint">Clic en un centro: ver su gráfico · en un título: ordenar</span>
+        <button class="volver" id="volver" hidden>Ver total 12 centros</button>
+      </div>
+      <div class="tabla">
+        <table>
+          <thead><tr id="thr"></tr></thead>
+          <tbody id="tb"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="crit">
+      <span>Evaluación:</span>
+      <span class="pill ok">90–110%</span>
+      <span class="pill warn">70–90% · 110–130%</span>
+      <span class="pill bad">&lt;70% · ≥130%</span>
+      <span class="hint">Proyección = producción acumulada ÷ meses cargados × 12</span>
+    </div>
+    <div class="soporte">Soporte: <a href="mailto:asesoriakinesica.dcs@apstalca.cl">asesoriakinesica.dcs@apstalca.cl</a></div>
+  </footer>
+</div>
+
+<script>
+const DATA = {"meses_cargados":8,"centros":["CESFAM La Florida","CESFAM J. D. Astaburuaga","CESFAM Carlos Trupp","CESFAM Julio Contardo","CESFAM Las Américas","CESFAM Magisterio","CESFAM Faustino González","CESFAM Bicentenario","CECOSF Nuevo Horizonte","CECOSF Brilla el Sol","CECOSF Carlos Trupp","PSR Mercedes"],"trazadoras":[{"id":"TRZ_1_1","nombre":"1.1 CONTROL DE SALUD INFANTIL CON EVALUACIÓN DEL DESARROLLO PSICOMOTOR - 8 meses","poblacion":"Población de 8 meses","rem":"A03","celdas_rem":"H21:I21 + H22:I22 + H23:I23+H24:I24","ruta_rem":"REM A03 // H21:I21 + H22:I22 + H23:I23+H24:I24","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA22","centros":{"CESFAM La Florida":{"programado":180,"produccion":[14,16,16,12,17,15,14,18]},"CESFAM J. D. Astaburuaga":{"programado":240,"produccion":[12,10,20,27,12,26,9,23]},"CESFAM Carlos Trupp":{"programado":260,"produccion":[11,19,22,10,11,10,9,13]},"CESFAM Julio Contardo":{"programado":162,"produccion":[10,8,11,8,8,6,13,9]},"CESFAM Las Américas":{"programado":257,"produccion":[35,15,19,10,24,11,25,22]},"CESFAM Magisterio":{"programado":185,"produccion":[15,8,17,24,11,19,7,13]},"CESFAM Faustino González":{"programado":85,"produccion":[4,4,4,8,11,4,6,5]},"CESFAM Bicentenario":{"programado":247,"produccion":[11,7,12,18,15,20,14,26]},"CECOSF Nuevo Horizonte":{"programado":19,"produccion":[0,4,1,1,0,2,2,0]},"CECOSF Brilla el Sol":{"programado":8,"produccion":[0,0,1,1,0,0,1,1]},"CECOSF Carlos Trupp":{"programado":37,"produccion":[2,4,5,2,1,3,1,2]},"PSR Mercedes":{"programado":46,"produccion":[0,2,4,4,2,2,1,5]}}},{"id":"TRZ_1_2","nombre":"1.2 CONTROL DE SALUD INFANTIL CON EVALUACIÓN DEL DESARROLLO PSICOMOTOR - 3 años","poblacion":"Población de 3 años","rem":"A03","celdas_rem":"N21:O21+N22:O22+N23:O23+N24:O24","ruta_rem":"REM A03 // N21:O21+N22:O22+N23:O23+N24:O24","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA38","centros":{"CESFAM La Florida":{"programado":303,"produccion":[14,17,12,24,12,35,26,19]},"CESFAM J. D. Astaburuaga":{"programado":305,"produccion":[29,18,13,21,17,27,17,10]},"CESFAM Carlos Trupp":{"programado":382,"produccion":[17,19,31,22,16,17,20,22]},"CESFAM Julio Contardo":{"programado":198,"produccion":[9,7,10,5,10,7,10,7]},"CESFAM Las Américas":{"programado":458,"produccion":[28,26,24,19,11,19,24,31]},"CESFAM Magisterio":{"programado":289,"produccion":[12,11,19,17,11,14,20,14]},"CESFAM Faustino González":{"programado":161,"produccion":[6,4,7,11,13,13,23,16]},"CESFAM Bicentenario":{"programado":333,"produccion":[14,9,25,28,29,28,20,15]},"CECOSF Nuevo Horizonte":{"programado":13,"produccion":[0,1,1,1,0,3,0,1]},"CECOSF Brilla el Sol":{"programado":11,"produccion":[2,2,0,0,1,0,0,0]},"CECOSF Carlos Trupp":{"programado":63,"produccion":[3,7,0,5,2,4,5,2]},"PSR Mercedes":{"programado":70,"produccion":[2,2,1,9,4,3,4,6]}}},{"id":"TRZ_2","nombre":"2 EDUCACIÓN GRUPAL EN ADOLESCENTES","poblacion":"Población entre 10 y 19 años","rem":"A27","celdas_rem":"J34+J35+K34+K35","ruta_rem":"REM A27 // J34+J35+K34+K35","ruta_mpo":"HOJA:PROGRAMA_SALUD_MENTAL CELDA M45+M46","centros":{"CESFAM La Florida":{"programado":103.3,"produccion":[0,0,0,0,0,0,0,10]},"CESFAM J. D. Astaburuaga":{"programado":80.86,"produccion":[0,0,0,0,25,0,0,0]},"CESFAM Carlos Trupp":{"programado":102.7,"produccion":[0,0,0,4,0,4,0,0]},"CESFAM Julio Contardo":{"programado":56.12,"produccion":[0,0,0,0,0,0,0,0]},"CESFAM Las Américas":{"programado":97.52,"produccion":[0,0,0,4,0,0,0,5]},"CESFAM Magisterio":{"programado":66.46,"produccion":[3,0,0,0,0,0,0,0]},"CESFAM Faustino González":{"programado":35.16,"produccion":[0,0,0,0,34,0,28,0]},"CESFAM Bicentenario":{"programado":45.62,"produccion":[0,0,0,0,0,0,0,0]},"CECOSF Nuevo Horizonte":{"programado":5.26,"produccion":[0,0,0,0,0,0,0,0]},"CECOSF Brilla el Sol":{"programado":4,"produccion":[0,0,0,0,0,0,0,0]},"CECOSF Carlos Trupp":{"programado":8.5,"produccion":[0,0,0,0,0,0,0,0]},"PSR Mercedes":{"programado":19.54,"produccion":[0,0,15,0,0,0,9,9]}}},{"id":"TRZ_3","nombre":"3 INGRESO A PROGRAMA DE REGULACIÓN DE FERTILIDAD EN POBLACIÓN ADOLESCENTE","poblacion":"Población entre 10 y 19 años","rem":"A05","celdas_rem":"D35+E35","ruta_rem":"REM A05 // D35+E35","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA107","centros":{"CESFAM La Florida":{"programado":186,"produccion":[19,24,29,15,36,14,23,48]},"CESFAM J. D. Astaburuaga":{"programado":290,"produccion":[24,11,29,18,19,18,36,12]},"CESFAM Carlos Trupp":{"programado":200,"produccion":[9,7,18,18,10,11,19,12]},"CESFAM Julio Contardo":{"programado":137,"produccion":[11,16,3,18,12,9,7,10]},"CESFAM Las Américas":{"programado":404,"produccion":[21,19,18,36,37,52,42,39]},"CESFAM Magisterio":{"programado":89,"produccion":[2,6,18,9,13,13,11,13]},"CESFAM Faustino González":{"programado":185,"produccion":[8,3,43,39,18,6,7,21]},"CESFAM Bicentenario":{"programado":122,"produccion":[5,3,4,8,6,2,3,7]},"CECOSF Nuevo Horizonte":{"programado":30,"produccion":[3,2,3,3,1,3,0,2]},"CECOSF Brilla el Sol":{"programado":2,"produccion":[0,1,1,1,1,0,0,0]},"CECOSF Carlos Trupp":{"programado":35,"produccion":[3,3,4,3,0,1,15,5]},"PSR Mercedes":{"programado":130,"produccion":[4,4,9,10,13,7,6,13]}}},{"id":"TRZ_4","nombre":"4 CONTROL DE CLIMATERIO","poblacion":"Población mujer 45 a 64 años","rem":"A01","celdas_rem":"L29:P29 + L30:P30","ruta_rem":"REM A01 // L29:P29 + L30:P30","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA162","centros":{"CESFAM La Florida":{"programado":1346,"produccion":[39,45,36,53,34,54,37,42]},"CESFAM J. D. Astaburuaga":{"programado":340,"produccion":[4,0,20,27,25,45,35,41]},"CESFAM Carlos Trupp":{"programado":714,"produccion":[10,8,27,59,46,40,113,102]},"CESFAM Julio Contardo":{"programado":512,"produccion":[16,22,52,50,47,73,70,97]},"CESFAM Las Américas":{"programado":510,"produccion":[19,13,24,34,29,55,51,54]},"CESFAM Magisterio":{"programado":1064,"produccion":[2,7,42,50,56,28,20,14]},"CESFAM Faustino González":{"programado":680,"produccion":[11,7,60,26,23,44,51,41]},"CESFAM Bicentenario":{"programado":264,"produccion":[4,5,4,0,3,20,20,15]},"CECOSF Nuevo Horizonte":{"programado":202,"produccion":[2,5,3,2,3,11,8,8]},"CECOSF Brilla el Sol":{"programado":18,"produccion":[0,0,2,7,1,6,9,5]},"CECOSF Carlos Trupp":{"programado":58,"produccion":[0,0,8,6,11,17,19,25]},"PSR Mercedes":{"programado":258,"produccion":[1,4,8,25,14,18,14,17]}}},{"id":"TRZ_5_1","nombre":"5.1 INGRESOS INTEGRALES DE PERSONAS CON CONDICIONES CRÓNICAS - 25 a 64 años","poblacion":"Población de 25-64 años y más con condiciones crónicas estratificada en riesgo moderado (G2) y riesgo alto (G3)","rem":"A05","celdas_rem":"J358:Y358 + J359:Y359","ruta_rem":"REM A05 // J358:Y358 + J359:Y359","ruta_mpo":"HOJA:ECICEP CELDA R31+R44","centros":{"CESFAM La Florida":{"programado":104,"produccion":[12,22,22,22,27,24,23,14]},"CESFAM J. D. Astaburuaga":{"programado":358,"produccion":[20,11,21,18,18,34,29,22]},"CESFAM Carlos Trupp":{"programado":678,"produccion":[12,10,14,12,28,25,23,21]},"CESFAM Julio Contardo":{"programado":308,"produccion":[15,5,20,25,24,20,17,30]},"CESFAM Las Américas":{"programado":379,"produccion":[18,15,13,13,40,53,49,51]},"CESFAM Magisterio":{"programado":315,"produccion":[38,41,55,67,52,48,44,33]},"CESFAM Faustino González":{"programado":153,"produccion":[0,1,13,19,9,16,20,20]},"CESFAM Bicentenario":{"programado":189,"produccion":[11,6,14,15,13,15,17,25]},"CECOSF Nuevo Horizonte":{"programado":212,"produccion":[5,7,3,8,3,12,6,17]},"CECOSF Brilla el Sol":{"programado":67,"produccion":[1,0,4,0,0,3,1,0]},"CECOSF Carlos Trupp":{"programado":73,"produccion":[4,5,16,22,16,5,3,4]},"PSR Mercedes":{"programado":291,"produccion":[0,3,2,12,5,5,5,3]}}},{"id":"TRZ_5_2","nombre":"5.2 INGRESOS INTEGRALES DE PERSONAS CON CONDICIONES CRÓNICAS - 65 y más años","poblacion":"Población de 65 años y más con condiciones crónicas estratificada en riesgo moderado (G2) y riesgo alto (G3)","rem":"A05","celdas_rem":"Z358:AG358 + Z359:AG359","ruta_rem":"REM A05 // Z358:AG358 + Z359:AG359","ruta_mpo":"HOJA:ECICEP CELDA R34+R49","centros":{"CESFAM La Florida":{"programado":72,"produccion":[21,19,13,29,32,44,32,26]},"CESFAM J. D. Astaburuaga":{"programado":476,"produccion":[20,21,19,36,19,34,33,34]},"CESFAM Carlos Trupp":{"programado":1052,"produccion":[9,4,8,17,11,10,8,10]},"CESFAM Julio Contardo":{"programado":646,"produccion":[10,15,20,18,25,14,22,33]},"CESFAM Las Américas":{"programado":295,"produccion":[17,6,4,9,18,18,25,29]},"CESFAM Magisterio":{"programado":417,"produccion":[47,55,59,68,41,48,40,35]},"CESFAM Faustino González":{"programado":198,"produccion":[1,0,16,12,10,18,7,45]},"CESFAM Bicentenario":{"programado":38,"produccion":[6,5,13,20,16,16,12,19]},"CECOSF Nuevo Horizonte":{"programado":218,"produccion":[5,4,8,3,3,10,10,10]},"CECOSF Brilla el Sol":{"programado":98,"produccion":[0,1,3,0,0,2,1,2]},"CECOSF Carlos Trupp":{"programado":72,"produccion":[11,12,18,18,6,0,0,3]},"PSR Mercedes":{"programado":246,"produccion":[4,2,4,11,7,9,5,6]}}},{"id":"TRZ_6","nombre":"6 INTERVENCIÓN PSICOSOCIAL GRUPAL","poblacion":"Población bajo control","rem":"A06","celdas_rem":"C23","ruta_rem":"REM A06 // C23","ruta_mpo":"HOJA:PROGRAMA_SALUD_MENTAL CELDA M40*0,05","centros":{"CESFAM La Florida":{"programado":114.15,"produccion":[26,0,20,16,37,10,13,104]},"CESFAM J. D. Astaburuaga":{"programado":93.25,"produccion":[0,0,31,22,35,34,13,31]},"CESFAM Carlos Trupp":{"programado":92.65,"produccion":[0,0,0,0,0,16,0,0]},"CESFAM Julio Contardo":{"programado":62.55,"produccion":[0,0,26,29,22,0,13,0]},"CESFAM Las Américas":{"programado":84.7,"produccion":[0,0,0,0,0,0,75,168]},"CESFAM Magisterio":{"programado":76.1,"produccion":[0,0,0,7,10,12,0,0]},"CESFAM Faustino González":{"programado":33.65,"produccion":[31,14,179,118,150,95,59,88]},"CESFAM Bicentenario":{"programado":40.25,"produccion":[0,0,0,0,0,0,0,0]},"CECOSF Nuevo Horizonte":{"programado":11.8,"produccion":[0,0,0,26,0,0,0,0]},"CECOSF Brilla el Sol":{"programado":5.55,"produccion":[0,0,0,0,0,0,0,0]},"CECOSF Carlos Trupp":{"programado":5.3,"produccion":[0,0,0,0,0,0,0,0]},"PSR Mercedes":{"programado":18.75,"produccion":[0,0,0,0,0,0,42,5]}}},{"id":"TRZ_7","nombre":"7 CONSULTA MORBILIDAD ODONTOLÓGICA ADULTO MAYOR","poblacion":"Población de 65 y más años","rem":"A09","celdas_rem":"AM12:AP12","ruta_rem":"REM A09 // AM12:AP12","ruta_mpo":"HOJA:PROGRAMA_ODONTOLOGICO W23 [L23 = 65a + ≥66a]","centros":{"CESFAM La Florida":{"programado":2818.2,"produccion":[220,213,282,262,238,268,268,269]},"CESFAM J. D. Astaburuaga":{"programado":2128.7,"produccion":[206,127,177,247,222,328,358,277]},"CESFAM Carlos Trupp":{"programado":1878.8,"produccion":[183,100,168,250,211,258,271,249]},"CESFAM Julio Contardo":{"programado":1508.5,"produccion":[135,92,138,150,160,151,191,158]},"CESFAM Las Américas":{"programado":908.95,"produccion":[62,62,94,65,91,107,90,113]},"CESFAM Magisterio":{"programado":1185.8,"produccion":[125,136,156,179,170,189,201,186]},"CESFAM Faustino González":{"programado":676.2,"produccion":[101,54,75,66,85,73,65,64]},"CESFAM Bicentenario":{"programado":444.5,"produccion":[20,25,26,27,60,74,57,66]},"CECOSF Nuevo Horizonte":{"programado":403.9,"produccion":[49,36,48,36,65,51,35,57]},"CECOSF Brilla el Sol":{"programado":156.8,"produccion":[14,13,13,20,19,25,12,11]},"CECOSF Carlos Trupp":{"programado":130.9,"produccion":[15,7,18,8,10,19,16,27]},"PSR Mercedes":{"programado":389.55,"produccion":[21,21,35,34,34,66,33,35]}}},{"id":"TRZ_8","nombre":"8 CONTROL DE SALUD EN ADULTOS MAYORES (EMPAM) SEGUIMIENTO AUTOVALENTE","poblacion":"Población de 65 y más años","rem":"A01","celdas_rem":"AF48:AM48 + AF49:AM49 + AF50:AM50 + AF51:AM51 + AF52:AM52 + AF53:AM53","ruta_rem":"REM A01 // AF48:AM48 + AF49:AM49 + AF50:AM50 + AF51:AM51 + AF52:AM52 + AF53:AM53","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA211+AA212","centros":{"CESFAM La Florida":{"programado":125,"produccion":[1,0,2,0,0,1,1,0]},"CESFAM J. D. Astaburuaga":{"programado":1376,"produccion":[16,3,8,9,5,8,15,13]},"CESFAM Carlos Trupp":{"programado":276,"produccion":[1,1,1,3,1,1,2,0]},"CESFAM Julio Contardo":{"programado":1121,"produccion":[0,1,1,4,1,0,7,1]},"CESFAM Las Américas":{"programado":53,"produccion":[0,0,0,1,36,10,0,47]},"CESFAM Magisterio":{"programado":134,"produccion":[1,0,0,1,3,1,10,2]},"CESFAM Faustino González":{"programado":46,"produccion":[0,0,45,3,7,5,34,27]},"CESFAM Bicentenario":{"programado":198,"produccion":[0,1,3,1,9,3,1,6]},"CECOSF Nuevo Horizonte":{"programado":255,"produccion":[0,3,7,10,4,4,10,0]},"CECOSF Brilla el Sol":{"programado":155,"produccion":[0,1,0,1,0,0,0,1]},"CECOSF Carlos Trupp":{"programado":2,"produccion":[0,0,2,1,0,1,5,4]},"PSR Mercedes":{"programado":175,"produccion":[0,0,3,5,4,6,0,2]}}},{"id":"TRZ_9","nombre":"9 CONSULTA DE MORBILIDAD","poblacion":"Población inscrita validada","rem":"A04","celdas_rem":"B12","ruta_rem":"REM A04 // B12","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA14 + AA96 + AA148 + AA209","centros":{"CESFAM La Florida":{"programado":33602,"produccion":[2009,2044,2549,2513,1986,2320,2735,2910]},"CESFAM J. D. Astaburuaga":{"programado":35022,"produccion":[1645,1576,1714,3455,2860,3639,1888,2346]},"CESFAM Carlos Trupp":{"programado":22809,"produccion":[2158,1750,2053,2223,1953,2032,2153,2185]},"CESFAM Julio Contardo":{"programado":15712,"produccion":[1390,1235,1418,1452,1188,1275,1531,1527]},"CESFAM Las Américas":{"programado":23268,"produccion":[1934,1793,2088,2274,2089,4494,2430,2572]},"CESFAM Magisterio":{"programado":18251,"produccion":[1168,1080,1308,1373,1101,1286,1377,1287]},"CESFAM Faustino González":{"programado":11742,"produccion":[882,823,884,1340,976,1259,1495,1436]},"CESFAM Bicentenario":{"programado":6140,"produccion":[692,585,658,721,650,1208,762,696]},"CECOSF Nuevo Horizonte":{"programado":1093,"produccion":[91,134,127,65,40,282,136,156]},"CECOSF Brilla el Sol":{"programado":1549,"produccion":[112,112,147,138,121,333,134,178]},"CECOSF Carlos Trupp":{"programado":1932,"produccion":[120,105,146,113,107,295,244,214]},"PSR Mercedes":{"programado":7543,"produccion":[622,473,682,591,570,693,662,597]}}},{"id":"TRZ_10","nombre":"10 CONTROL DE CRÓNICOS RESPIRATORIOS SALA ERA","poblacion":"Población mayor de 20 años","rem":"A23","celdas_rem":"O66:AN66","ruta_rem":"REM A23 // O66:AN66","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA183 + AA187+ AA223+AA227","centros":{"CESFAM La Florida":{"programado":2420,"produccion":[145,111,158,157,57,55,56,77]},"CESFAM J. D. Astaburuaga":{"programado":3190,"produccion":[114,54,146,124,86,100,86,88]},"CESFAM Carlos Trupp":{"programado":5506,"produccion":[156,166,183,226,169,229,214,254]},"CESFAM Julio Contardo":{"programado":3764,"produccion":[136,105,131,130,117,133,109,121]},"CESFAM Las Américas":{"programado":2028,"produccion":[82,48,48,80,34,102,51,77]},"CESFAM Magisterio":{"programado":2354,"produccion":[0,47,77,83,66,51,57,60]},"CESFAM Faustino González":{"programado":1480,"produccion":[81,45,91,101,53,186,134,140]},"CESFAM Bicentenario":{"programado":836,"produccion":[22,12,12,17,40,35,19,12]},"CECOSF Nuevo Horizonte":{"programado":356,"produccion":[13,29,6,31,2,2,19,24]},"CECOSF Brilla el Sol":{"programado":276,"produccion":[9,8,14,10,15,12,10,14]},"CECOSF Carlos Trupp":{"programado":436,"produccion":[9,2,8,8,4,10,16,4]},"PSR Mercedes":{"programado":982,"produccion":[43,18,33,39,18,28,68,61]}}},{"id":"TRZ_11","nombre":"11 CONSULTA NUTRICIONAL EN POBLACIÓN ADOLESCENTE","poblacion":"Población entre 10 y 19 años","rem":"A04","celdas_rem":"K39:N39 + K40:N40+ K41:N41","ruta_rem":"REM A04 // K39:N39 + K40:N40+ K41:N41","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA113","centros":{"CESFAM La Florida":{"programado":191.8,"produccion":[38,38,52,47,39,36,51,37]},"CESFAM J. D. Astaburuaga":{"programado":3075,"produccion":[16,21,23,32,19,16,11,19]},"CESFAM Carlos Trupp":{"programado":111,"produccion":[28,12,23,35,20,23,24,25]},"CESFAM Julio Contardo":{"programado":1164,"produccion":[9,7,11,12,11,8,10,23]},"CESFAM Las Américas":{"programado":1628,"produccion":[50,103,83,74,66,73,84,76]},"CESFAM Magisterio":{"programado":999,"produccion":[18,14,26,21,12,20,18,30]},"CESFAM Faustino González":{"programado":733,"produccion":[11,8,12,11,7,157,28,59]},"CESFAM Bicentenario":{"programado":439,"produccion":[11,17,13,4,10,10,10,6]},"CECOSF Nuevo Horizonte":{"programado":124,"produccion":[3,6,7,5,7,6,4,4]},"CECOSF Brilla el Sol":{"programado":14,"produccion":[0,2,5,1,3,3,1,1]},"CECOSF Carlos Trupp":{"programado":299,"produccion":[4,2,7,10,11,10,9,10]},"PSR Mercedes":{"programado":551,"produccion":[2,2,6,4,3,7,11,5]}}},{"id":"TRZ_12","nombre":"12 CONTROL DE SALUD EN POBLACIÓN INFANTIL MENOR DE 1 AÑO","poblacion":"Población 2, 4, 6 meses","rem":"A01","celdas_rem":"H36:H37+ J36:J37+ L36:L37","ruta_rem":"REM A01 // H36:H37+ J36:J37+ L36:L37","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA21","centros":{"CESFAM La Florida":{"programado":500,"produccion":[59,38,68,55,51,62,59,54]},"CESFAM J. D. Astaburuaga":{"programado":545,"produccion":[45,50,49,61,49,43,52,55]},"CESFAM Carlos Trupp":{"programado":732,"produccion":[24,41,39,59,44,48,42,49]},"CESFAM Julio Contardo":{"programado":456,"produccion":[30,18,32,24,31,18,43,31]},"CESFAM Las Américas":{"programado":723,"produccion":[60,52,52,49,38,57,48,61]},"CESFAM Magisterio":{"programado":521,"produccion":[42,47,37,32,31,26,40,44]},"CESFAM Faustino González":{"programado":239,"produccion":[17,7,24,26,33,19,25,14]},"CESFAM Bicentenario":{"programado":695,"produccion":[42,25,44,39,34,45,48,47]},"CECOSF Nuevo Horizonte":{"programado":53,"produccion":[4,0,2,1,1,1,3,1]},"CECOSF Brilla el Sol":{"programado":22,"produccion":[1,4,3,1,1,3,2,4]},"CECOSF Carlos Trupp":{"programado":103,"produccion":[7,7,11,5,9,6,5,8]},"PSR Mercedes":{"programado":128,"produccion":[5,5,2,12,6,13,14,8]}}},{"id":"TRZ_13","nombre":"13 CONTROL DE CRÓNICOS RESPIRATORIO SALA IRA","poblacion":"Población menor de 20 años","rem":"A23","celdas_rem":"E66:N66","ruta_rem":"REM A23 // E66:N66","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA79 + AA83+ AA127+ AA130","centros":{"CESFAM La Florida":{"programado":1247,"produccion":[34,28,89,81,62,65,61,65]},"CESFAM J. D. Astaburuaga":{"programado":1950,"produccion":[75,35,86,70,59,80,75,54]},"CESFAM Carlos Trupp":{"programado":1930,"produccion":[70,70,117,133,82,176,117,273]},"CESFAM Julio Contardo":{"programado":510,"produccion":[15,6,22,17,14,29,8,13]},"CESFAM Las Américas":{"programado":2529,"produccion":[82,95,69,134,101,128,141,124]},"CESFAM Magisterio":{"programado":1148,"produccion":[0,39,72,81,32,75,63,64]},"CESFAM Faustino González":{"programado":1170,"produccion":[48,24,45,46,25,170,48,41]},"CESFAM Bicentenario":{"programado":884,"produccion":[20,18,23,27,41,47,43,30]},"CECOSF Nuevo Horizonte":{"programado":32,"produccion":[0,5,2,1,0,2,2,1]},"CECOSF Brilla el Sol":{"programado":29,"produccion":[0,0,0,1,0,0,1,0]},"CECOSF Carlos Trupp":{"programado":176,"produccion":[6,5,6,2,7,10,13,8]},"PSR Mercedes":{"programado":699,"produccion":[7,8,7,19,13,42,28,34]}}},{"id":"TRZ_14","nombre":"14 CONSULTA NUTRICIONAL DE MALNUTRICIÓN POR EXCESO EN POBLACIÓN INFANTIL","poblacion":"Población menor de 10 años","rem":"A04","celdas_rem":"E40:J40","ruta_rem":"REM A04 // E40:J40","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA48 + AA50+ AA52 + AA54","centros":{"CESFAM La Florida":{"programado":2068,"produccion":[38,27,58,56,56,47,31,41]},"CESFAM J. D. Astaburuaga":{"programado":2520,"produccion":[36,21,32,27,28,26,21,28]},"CESFAM Carlos Trupp":{"programado":2763,"produccion":[56,28,39,50,38,55,43,39]},"CESFAM Julio Contardo":{"programado":1248,"produccion":[32,33,44,24,30,30,33,36]},"CESFAM Las Américas":{"programado":3432,"produccion":[42,33,31,46,34,33,52,61]},"CESFAM Magisterio":{"programado":1224,"produccion":[21,28,32,24,37,23,31,31]},"CESFAM Faustino González":{"programado":969,"produccion":[14,9,9,13,4,109,19,123]},"CESFAM Bicentenario":{"programado":1638,"produccion":[17,12,16,10,14,21,12,27]},"CECOSF Nuevo Horizonte":{"programado":96,"produccion":[1,4,1,1,2,1,1,2]},"CECOSF Brilla el Sol":{"programado":0,"produccion":[3,3,1,0,3,2,0,1]},"CECOSF Carlos Trupp":{"programado":201,"produccion":[2,2,3,9,4,8,7,2]},"PSR Mercedes":{"programado":381,"produccion":[3,4,3,2,1,1,10,2]}}},{"id":"TRZ_15","nombre":"15 VISITA DOMICILIARIA INTEGRAL","poblacion":"Total de familias","rem":"A26","celdas_rem":"C10:C35+C47:F47","ruta_rem":"REM A26 // C10:C35+C47:F47","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA258:AA260+AA265+AA276+AA278:AA281+AA284:AA287:AA295:AA310","centros":{"CESFAM La Florida":{"programado":3315.27,"produccion":[282,322,401,336,349,376,375,229]},"CESFAM J. D. Astaburuaga":{"programado":4137.83,"produccion":[235,254,216,390,261,195,212,172]},"CESFAM Carlos Trupp":{"programado":3910.05,"produccion":[291,246,261,430,410,341,246,186]},"CESFAM Julio Contardo":{"programado":1640.3,"produccion":[228,213,238,315,232,215,93,100]},"CESFAM Las Américas":{"programado":3268.58,"produccion":[187,263,373,341,220,183,194,187]},"CESFAM Magisterio":{"programado":1835.34,"produccion":[188,157,223,209,218,214,302,291]},"CESFAM Faustino González":{"programado":782.89,"produccion":[54,70,92,246,206,184,217,216]},"CESFAM Bicentenario":{"programado":1620.62,"produccion":[66,55,50,56,62,51,90,89]},"CECOSF Nuevo Horizonte":{"programado":926.98,"produccion":[31,28,41,30,26,27,41,32]},"CECOSF Brilla el Sol":{"programado":1279.9,"produccion":[13,12,16,9,15,9,13,9]},"CECOSF Carlos Trupp":{"programado":473.56,"produccion":[24,13,25,17,16,19,15,21]},"PSR Mercedes":{"programado":1309.42,"produccion":[84,81,59,93,61,86,65,41]}}},{"id":"TRZ_16","nombre":"16 CONSULTA DE LACTANCIA MATERNA","poblacion":"Madres y población menor de 6 meses","rem":"A04","celdas_rem":"D141:H141 + D142:H142 + D143:H143","ruta_rem":"REM A04 // D141:H141 + D142:H142 + D143:H143","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA15 + AA16","centros":{"CESFAM La Florida":{"programado":920,"produccion":[42,22,45,39,26,36,34,44]},"CESFAM J. D. Astaburuaga":{"programado":330,"produccion":[26,43,27,39,23,31,39,25]},"CESFAM Carlos Trupp":{"programado":626,"produccion":[46,35,39,61,42,48,50,49]},"CESFAM Julio Contardo":{"programado":392,"produccion":[29,23,15,20,10,21,27,17]},"CESFAM Las Américas":{"programado":954,"produccion":[31,36,36,42,44,33,39,43]},"CESFAM Magisterio":{"programado":480,"produccion":[38,25,38,37,33,35,45,38]},"CESFAM Faustino González":{"programado":111,"produccion":[15,3,13,16,6,10,16,35]},"CESFAM Bicentenario":{"programado":382,"produccion":[25,17,24,18,31,27,43,32]},"CECOSF Nuevo Horizonte":{"programado":48,"produccion":[0,1,4,0,5,6,10,3]},"CECOSF Brilla el Sol":{"programado":21,"produccion":[3,1,0,1,0,4,0,3]},"CECOSF Carlos Trupp":{"programado":30,"produccion":[6,2,6,2,2,7,5,8]},"PSR Mercedes":{"programado":108,"produccion":[6,6,3,4,9,6,10,8]}}},{"id":"TRZ_17","nombre":"17 CONTROL DE SALUD MENTAL (POR MÉDICO)","poblacion":"Población bajo control","rem":"A06","celdas_rem":"C12","ruta_rem":"REM A06 // C12","ruta_mpo":"HOJA:PROGRAMA_SALUD_MENTAL CELDA W17+W20+W24+W28+W32","centros":{"CESFAM La Florida":{"programado":4134,"produccion":[424,379,535,556,411,484,542,570]},"CESFAM J. D. Astaburuaga":{"programado":3585,"produccion":[250,243,278,265,283,302,293,442]},"CESFAM Carlos Trupp":{"programado":3846,"produccion":[461,461,577,635,494,453,537,554]},"CESFAM Julio Contardo":{"programado":2607,"produccion":[347,308,398,379,298,320,353,362]},"CESFAM Las Américas":{"programado":3592,"produccion":[419,307,344,471,451,404,378,475]},"CESFAM Magisterio":{"programado":2730,"produccion":[261,227,301,286,232,249,241,246]},"CESFAM Faustino González":{"programado":1318,"produccion":[239,168,250,246,207,217,263,252]},"CESFAM Bicentenario":{"programado":1512,"produccion":[145,131,119,105,122,159,160,170]},"CECOSF Nuevo Horizonte":{"programado":428,"produccion":[30,30,24,23,12,32,36,38]},"CECOSF Brilla el Sol":{"programado":256,"produccion":[20,28,39,25,38,27,29,44]},"CECOSF Carlos Trupp":{"programado":303,"produccion":[14,18,22,20,16,35,11,22]},"PSR Mercedes":{"programado":766,"produccion":[79,66,68,48,53,111,110,101]}}},{"id":"TRZ_18","nombre":"18 CONTROLES INTEGRALES DE PERSONAS CON CONDICIONES CRÓNICAS","poblacion":"Población de 15 y más años con condiciones crónicas estratificada en riesgo moderado (G2) y riesgo alto (G3)","rem":"A01","celdas_rem":"E89:AF89 + E90:AF90","ruta_rem":"REM A01 // E89:AF89 + E90:AF90","ruta_mpo":"HOJA:ECICEP CELDA R29+R32+R35+R40+R45+R50","centros":{"CESFAM La Florida":{"programado":7545,"produccion":[493,350,437,444,344,417,445,481]},"CESFAM J. D. Astaburuaga":{"programado":18747,"produccion":[327,236,302,433,413,480,495,496]},"CESFAM Carlos Trupp":{"programado":10714,"produccion":[141,92,101,135,126,152,113,121]},"CESFAM Julio Contardo":{"programado":6160,"produccion":[73,61,97,142,115,147,144,138]},"CESFAM Las Américas":{"programado":6562,"produccion":[112,81,104,144,147,181,231,255]},"CESFAM Magisterio":{"programado":5791,"produccion":[133,159,215,281,214,241,247,291]},"CESFAM Faustino González":{"programado":3470,"produccion":[111,67,107,157,133,179,154,183]},"CESFAM Bicentenario":{"programado":2371,"produccion":[75,41,66,94,94,113,115,119]},"CECOSF Nuevo Horizonte":{"programado":2004,"produccion":[29,20,20,27,19,20,33,31]},"CECOSF Brilla el Sol":{"programado":1022,"produccion":[16,18,26,25,18,16,26,32]},"CECOSF Carlos Trupp":{"programado":798,"produccion":[8,28,24,40,39,42,45,64]},"PSR Mercedes":{"programado":2354,"produccion":[36,34,56,73,63,72,46,47]}}},{"id":"TRZ_19","nombre":"19 CONSULTA NUTRICIONAL AL 5° MES DE VIDA","poblacion":"Población bajo control de 5 meses a 11 meses y 29 días (Según estrategia de intervención en el curso de vida)","rem":"P2","celdas_rem":"C116","ruta_rem":"REM P2 // C116","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA45","centros":{"CESFAM La Florida":{"programado":131,"produccion":[null,null,null,null,null,76,null,null]},"CESFAM J. D. Astaburuaga":{"programado":116,"produccion":[null,null,null,null,null,108,null,null]},"CESFAM Carlos Trupp":{"programado":234,"produccion":[null,null,null,null,null,116,null,null]},"CESFAM Julio Contardo":{"programado":100,"produccion":[null,null,null,null,null,56,null,null]},"CESFAM Las Américas":{"programado":246,"produccion":[null,null,null,null,null,95,null,null]},"CESFAM Magisterio":{"programado":84,"produccion":[null,null,null,null,null,68,null,null]},"CESFAM Faustino González":{"programado":95,"produccion":[null,null,null,null,null,76,null,null]},"CESFAM Bicentenario":{"programado":136,"produccion":[null,null,null,null,null,142,null,null]},"CECOSF Nuevo Horizonte":{"programado":12,"produccion":[null,null,null,null,null,20,null,null]},"CECOSF Brilla el Sol":{"programado":23,"produccion":[null,null,null,null,null,3,null,null]},"CECOSF Carlos Trupp":{"programado":33,"produccion":[null,null,null,null,null,34,null,null]},"PSR Mercedes":{"programado":35,"produccion":[null,null,null,null,null,18,null,null]}}},{"id":"TRZ_20","nombre":"20 SEGUIMIENTOS ECICEP","poblacion":"Población de 15 y más años con condiciones crónicas estratificada","rem":"A01","celdas_rem":"B91+B92+B93","ruta_rem":"REM A01 // B91+B92+B93","ruta_mpo":"HOJA:ECICEP CELDA R19+R22+R25+R30+R33+R36+R41+R46+R51","centros":{"CESFAM La Florida":{"programado":11364,"produccion":[441,197,337,445,178,541,550,477]},"CESFAM J. D. Astaburuaga":{"programado":17266,"produccion":[100,269,228,256,259,278,359,250]},"CESFAM Carlos Trupp":{"programado":16636,"produccion":[237,137,269,230,190,96,155,213]},"CESFAM Julio Contardo":{"programado":9794,"produccion":[72,16,48,250,219,190,99,76]},"CESFAM Las Américas":{"programado":11316,"produccion":[145,0,162,112,273,172,202,355]},"CESFAM Magisterio":{"programado":9942,"produccion":[125,18,159,123,108,87,70,72]},"CESFAM Faustino González":{"programado":5734,"produccion":[203,45,141,699,600,457,216,431]},"CESFAM Bicentenario":{"programado":4376,"produccion":[0,0,0,0,0,39,67,70]},"CECOSF Nuevo Horizonte":{"programado":3722,"produccion":[0,18,0,32,18,14,20,51]},"CECOSF Brilla el Sol":{"programado":1734,"produccion":[0,9,12,7,3,8,0,69]},"CECOSF Carlos Trupp":{"programado":1274,"produccion":[0,0,71,18,95,70,58,115]},"PSR Mercedes":{"programado":3816,"produccion":[10,0,14,31,45,50,64,40]}}},{"id":"TRZ_21","nombre":"21 CONTROL DE SALUD INFANTIL 6 A 9 AÑO","poblacion":"Población de 6 a 9 años","rem":"A01","celdas_rem":"S36+S37","ruta_rem":"REM A01 // S36+S37","ruta_mpo":"HOJA:HORAS_DIRECTAS_A CELDA AA41","centros":{"CESFAM La Florida":{"programado":475,"produccion":[33,31,49,46,35,63,69,45]},"CESFAM J. D. Astaburuaga":{"programado":1301,"produccion":[24,36,25,26,28,36,27,37]},"CESFAM Carlos Trupp":{"programado":1777,"produccion":[25,33,57,59,45,32,44,33]},"CESFAM Julio Contardo":{"programado":1008,"produccion":[16,20,33,20,17,13,31,26]},"CESFAM Las Américas":{"programado":2032,"produccion":[41,47,51,30,33,48,45,41]},"CESFAM Magisterio":{"programado":1348,"produccion":[27,34,31,34,12,20,25,31]},"CESFAM Faustino González":{"programado":817,"produccion":[18,15,9,20,17,24,22,80]},"CESFAM Bicentenario":{"programado":1174,"produccion":[19,14,10,21,30,28,33,21]},"CECOSF Nuevo Horizonte":{"programado":105,"produccion":[4,1,0,3,2,1,1,0]},"CECOSF Brilla el Sol":{"programado":74,"produccion":[1,2,2,3,1,2,0,5]},"CECOSF Carlos Trupp":{"programado":178,"produccion":[2,5,1,13,11,7,7,4]},"PSR Mercedes":{"programado":350,"produccion":[2,3,2,8,5,9,9,9]}}}]};
+const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const MESES_L = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const TOTAL = "Total 12 centros";
+const N = DATA.meses_cargados;
+const fmt = (v, d = 0) => v == null || !isFinite(v) ? "–" : v.toLocaleString("es-CL", { maximumFractionDigits: d, minimumFractionDigits: d });
+const pct = v => v == null || !isFinite(v) ? "–" : fmt(v * 100, 1) + "%";
+const cap = s => s[0].toUpperCase() + s.slice(1);
+document.getElementById("corte").textContent = "enero – " + MESES_L[N - 1] + " 2026";
+
+let ti = 0, centro = TOTAL, orden = { col: "cumpl", dir: -1 };
+try {
+  const s = JSON.parse(localStorage.getItem("trz-sel") || "{}");
+  if (s.ti < DATA.trazadoras.length) ti = s.ti;
+  if (s.centro === TOTAL || DATA.centros.includes(s.centro)) centro = s.centro;
+  if (s.orden && s.orden.col) orden = s.orden;
+} catch (e) {}
+
+const sel = document.getElementById("sel");
+DATA.trazadoras.forEach((t, i) => sel.add(new Option(t.nombre, i)));
+
+function evalCls(p) {
+  if (p == null || !isFinite(p)) return ["na", "Sin dato"];
+  if (p >= .9 && p <= 1.1) return ["ok", "Cumple"];
+  if ((p >= .7 && p < .9) || (p > 1.1 && p < 1.3)) return ["warn", "Alerta"];
+  return ["bad", p < .7 ? "Bajo" : "Sobre"];
+}
+
+function serie(t, c) {
+  const nombres = c === TOTAL ? DATA.centros : [c];
+  const prog = nombres.reduce((a, n) => a + t.centros[n].programado, 0);
+  const mens = Array.from({ length: N }, (_, m) => {
+    let tot = 0, hay = false;
+    nombres.forEach(n => { const v = t.centros[n].produccion[m]; if (v != null) { tot += v; hay = true; } });
+    return hay ? tot : null;
+  });
+  return { prog, mens, esP: t.rem === "P2" };
+}
+
+function calc(s) {
+  const k = s.esP ? 6 : N;  // serie P = corte de junio
+  const acum = []; let a = 0;
+  if (s.esP) { for (let m = 0; m < 6; m++) acum.push(m === 5 ? s.mens[5] : null); }
+  else s.mens.forEach(v => { a += v || 0; acum.push(a); });
+  const prod = acum[k - 1], esperado = s.prog * k / 12, proy = prod / k * 12;
+  return { k, acum, prod, esperado, cumpl: esperado ? prod / esperado : null, proy };
+}
+
+const COLS = [
+  { id: "nombre", t: "Centro" },
+  { id: "prog", t: "Programado" },
+  { id: "esp", t: "Esperado" },
+  { id: "prod", t: "Producción" },
+  { id: "cumpl", t: "% Cumpl." },
+  { id: "proy", t: "Proy. dic." },
+];
+
+let cur = null;
+function render() {
+  try { localStorage.setItem("trz-sel", JSON.stringify({ ti, centro, orden })); } catch (e) {}
+  const t = DATA.trazadoras[ti];
+  sel.value = ti;
+  document.getElementById("nombre").textContent = t.nombre;
+  document.getElementById("pob").textContent = t.poblacion;
+  document.getElementById("nota").hidden = t.rem !== "P2";
+  document.getElementById("ambito").textContent = centro === TOTAL ? "Total 12 centros" : centro;
+  document.getElementById("volver").hidden = centro === TOTAL;
+  document.getElementById("hint").hidden = centro !== TOTAL;
+
+  const s = serie(t, centro), r = calc(s);
+  const mesTxt = MESES_L[r.k - 1];
+  const [cls, lab] = evalCls(r.cumpl);
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi prog"><span class="k">Programado 2026</span><span class="v">${fmt(s.prog)}</span><span class="s">Meta anual MPO</span></div>
+    <div class="kpi"><span class="k">Esperado a ${mesTxt}</span><span class="v">${fmt(r.esperado)}</span><span class="s">${r.k} de 12 meses</span></div>
+    <div class="kpi prod"><span class="k">Producción a ${mesTxt}</span><span class="v">${fmt(r.prod)}</span><span class="s">Acumulado REM</span></div>
+    <div class="kpi est ${cls}"><span class="k">% Cumplimiento</span><span class="v">${pct(r.cumpl)}</span><span class="s">${lab}</span></div>
+    <div class="kpi prod"><span class="k">Proyección dic.</span><span class="v">${fmt(r.proy)}</span><span class="s">${pct(r.proy / s.prog)} del programado</span></div>`;
+  cur = { s, r };
+  drawChart();
+  drawTable(t, mesTxt);
+}
+
+function niceMax(v) {
+  if (!(v > 0)) return 10;
+  const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p;
+  const n = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find(x => f <= x);
+  return n * p;
+}
+
+function drawChart() {
+  if (!cur) return;
+  const { s, r } = cur;
+  const el = document.getElementById("chart");
+  const W = Math.max(320, el.clientWidth), H = Math.max(240, el.clientHeight);
+  const L = 58, R = 64, T = 22, B = 30;
+  const progC = MESES.map((_, m) => s.prog * (m + 1) / 12);
+  const prodC = r.acum.slice();
+  const proyC = MESES.map((_, m) => m >= r.k - 1 ? r.prod / r.k * (m + 1) : null);
+  const ymax = niceMax(Math.max(...progC, ...proyC.filter(v => v != null), ...prodC.filter(v => v != null)) * 1.04);
+  const x = m => L + (W - L - R) * m / 11, y = v => T + (H - T - B) * (1 - v / ymax);
+  const nt = H > 360 ? 5 : 4;
+  const ticks = Array.from({ length: nt + 1 }, (_, i) => ymax * i / nt);
+  const path = arr => arr.map((v, m) => v == null ? null : [x(m), y(v)]).filter(Boolean).map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join("");
+  const area = arr => { const p = arr.map((v, m) => v == null ? null : [x(m), y(v)]).filter(Boolean); if (p.length < 2) return "";
+    return "M" + p[0][0] + "," + y(0) + p.map(q => "L" + q[0].toFixed(1) + "," + q[1].toFixed(1)).join("") + "L" + p[p.length - 1][0] + "," + y(0) + "Z"; };
+  const pts = (arr, col) => arr.map((v, m) => v == null ? "" : `<circle cx="${x(m)}" cy="${y(v)}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="2"/>`).join("");
+  const kx = r.k - 1;
+  let yP = y(progC[11]), yJ = y(proyC[11]);
+  if (Math.abs(yP - yJ) < 18) { const mid = (yP + yJ) / 2; if (yP < yJ) { yP = mid - 9; yJ = mid + 9; } else { yP = mid + 9; yJ = mid - 9; } }
+  const yLab = y(r.prod) + (y(r.prod) > y(progC[kx]) ? 22 : -12);
+  el.innerHTML = `
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Programado versus producción acumulada por mes">
+    <defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--prod)" stop-opacity=".22"/><stop offset="1" stop-color="var(--prod)" stop-opacity="0"/></linearGradient></defs>
+    <rect x="${x(kx)}" y="${T}" width="${x(11) - x(kx)}" height="${H - T - B}" fill="var(--panel-2)"/>
+    <text class="zona" x="${(x(kx) + x(11)) / 2}" y="${T + 14}" text-anchor="middle">Proyección</text>
+    ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>
+      <text x="${L - 10}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`).join("")}
+    ${MESES.map((mm, m) => `<text x="${x(m)}" y="${H - 9}" text-anchor="middle" ${m === kx ? 'style="font-weight:800;fill:var(--ink)"' : ""}>${mm}</text>`).join("")}
+    <path d="${area(prodC)}" fill="url(#gp)"/>
+    <path d="${path(progC)}" fill="none" stroke="var(--prog)" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="${path(proyC)}" fill="none" stroke="var(--prod)" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <path d="${path(prodC)}" fill="none" stroke="var(--prod)" stroke-width="3" stroke-linejoin="round"/>
+    ${pts(progC, "var(--prog)")}
+    ${pts(prodC, "var(--prod)")}
+    <circle cx="${x(11)}" cy="${y(proyC[11])}" r="5" fill="var(--panel)" stroke="var(--prod)" stroke-width="2.5"/>
+    <circle cx="${x(kx)}" cy="${y(r.prod)}" r="6" fill="var(--prod)" stroke="var(--panel)" stroke-width="2.5"/>
+    <text class="lbl" x="${x(11) + 10}" y="${yP + 4}">${fmt(progC[11])}</text>
+    <text class="lbl" x="${x(11) + 10}" y="${yJ + 4}">${fmt(proyC[11])}</text>
+    <text class="lbl" x="${x(kx)}" y="${yLab}" text-anchor="middle">${fmt(r.prod)}</text>
+    <line id="cross" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/>
+    <rect id="hit" x="${L - 20}" y="${T}" width="${W - L - R + 40}" height="${H - T - B}" fill="transparent"/>
+  </svg><div class="tip" id="tip" hidden></div>`;
+  const tip = el.querySelector("#tip"), cross = el.querySelector("#cross"), hit = el.querySelector("#hit");
+  hit.addEventListener("pointermove", ev => {
+    const b = el.getBoundingClientRect(), px = ev.clientX - b.left;
+    const m = Math.max(0, Math.min(11, Math.round((px - L) / (W - L - R) * 11)));
+    cross.setAttribute("x1", x(m)); cross.setAttribute("x2", x(m)); cross.setAttribute("visibility", "visible");
+    const real = m < r.k && prodC[m] != null;
+    const pv = real ? prodC[m] : proyC[m];
+    const mensual = !s.esP && m < r.k ? s.mens[m] : null;
+    tip.innerHTML = `<span class="m">${cap(MESES_L[m])}</span>
+      <span class="r"><span><i style="background:var(--prog)"></i>Programado acum.</span><b>${fmt(progC[m])}</b></span>
+      <span class="r"><span><i style="background:var(--prod)"></i>${real ? "Producción acum." : "Proyectado acum."}</span><b>${fmt(pv)}</b></span>
+      ${mensual != null ? `<span class="r"><span>Producción del mes</span><b>${fmt(mensual)}</b></span>` : ""}
+      ${pv != null ? `<span class="r"><span>Avance vs programado</span><b>${pct(pv / progC[m])}</b></span>` : ""}`;
+    tip.hidden = false;
+    const tw = tip.offsetWidth;
+    tip.style.left = (x(m) + 14 + tw > W ? x(m) - tw - 14 : x(m) + 14) + "px";
+    tip.style.top = (T + 4) + "px";
+  });
+  hit.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
+}
+
+function drawTable(t, mesTxt) {
+  document.getElementById("hmes").textContent = "· acumulado a " + mesTxt;
+  document.getElementById("thr").innerHTML = COLS.map(c => {
+    const act = orden.col === c.id;
+    const lbl = c.t.endsWith(" ") ? c.t + mesTxt : c.t;
+    return `<th ${act ? `aria-sort="${orden.dir > 0 ? "ascending" : "descending"}"` : ""}><button data-col="${c.id}">${lbl}<span class="ar">${act ? (orden.dir > 0 ? "▲" : "▼") : "▼"}</span></button></th>`;
+  }).join("");
+  const filas = DATA.centros.map(c => { const s = serie(t, c), r = calc(s); return { c, s, r,
+    v: { nombre: c, prog: s.prog, esp: r.esperado, prod: r.prod, cumpl: r.cumpl, proy: r.proy } }; });
+  filas.sort((a, b) => {
+    const A = a.v[orden.col], Bv = b.v[orden.col];
+    if (orden.col === "nombre") return orden.dir * A.localeCompare(Bv, "es");
+    const na = A == null || !isFinite(A), nb = Bv == null || !isFinite(Bv);
+    if (na || nb) return na - nb;
+    return orden.dir * (A - Bv);
+  });
+  const ts = serie(t, TOTAL), tr = calc(ts);
+  const fila = (c, s, r, total) => {
+    const [cls] = evalCls(r.cumpl);
+    const tipo = c.split(" ")[0], resto = c.slice(tipo.length + 1);
+    const nom = total ? c : `<span class="cn"><small>${tipo}</small>${resto}</span>`;
+    return `<tr class="${total ? "total" : ""} ${c === centro ? "sel" : ""}" data-c="${c}" tabindex="0">
+      <td>${nom}</td><td>${fmt(s.prog)}</td><td>${fmt(r.esperado)}</td><td>${fmt(r.prod)}</td>
+      <td><span class="pill ${cls}">${pct(r.cumpl)}</span></td><td>${fmt(r.proy)}</td></tr>`;
+  };
+  document.getElementById("tb").innerHTML = fila(TOTAL, ts, tr, true) + filas.map(f => fila(f.c, f.s, f.r, false)).join("");
+}
+
+document.getElementById("thr").addEventListener("click", e => {
+  const b = e.target.closest("button[data-col]"); if (!b) return;
+  const col = b.dataset.col;
+  orden = orden.col === col ? { col, dir: -orden.dir } : { col, dir: col === "nombre" ? 1 : -1 };
+  render();
+});
+const elegir = tr => { if (!tr || !tr.dataset.c) return; centro = tr.dataset.c; render(); };
+const tb = document.getElementById("tb");
+tb.addEventListener("click", e => elegir(e.target.closest("tr")));
+tb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(e.target.closest("tr")); } });
+sel.addEventListener("change", () => { ti = +sel.value; render(); });
+document.getElementById("prev").addEventListener("click", () => { ti = (ti + DATA.trazadoras.length - 1) % DATA.trazadoras.length; render(); });
+document.getElementById("next").addEventListener("click", () => { ti = (ti + 1) % DATA.trazadoras.length; render(); });
+document.getElementById("volver").addEventListener("click", () => { centro = TOTAL; render(); });
+let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(drawChart); }).observe(document.getElementById("chart"));
+render();
+</script>
+
+</body></html>
